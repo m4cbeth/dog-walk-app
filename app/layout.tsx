@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import type { ReactNode } from "react";
+import { ThemeProvider } from "@/components/theme-provider";
+import { AuthProvider } from "@/context/AuthContext";
+import { AppHeader } from "@/components/AppHeader";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -20,14 +24,29 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <AuthProvider>
+          <ThemeProvider>
+            <div className="flex min-h-screen flex-col bg-base-100 text-base-content transition-colors">
+              <AppHeader />
+              <main className="container mx-auto flex-1 px-4 py-6">
+                {children}
+              </main>
+              <footer className="border-t border-base-200 py-6">
+                <div className="container mx-auto flex flex-col gap-2 px-4 text-sm text-base-content/70 md:flex-row md:items-center md:justify-between">
+                  <span>© {new Date().getFullYear()} Dog Walk App</span>
+                  <span>Happy paws, happy owners.</span>
+                </div>
+              </footer>
+            </div>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

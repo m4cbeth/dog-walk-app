@@ -1,0 +1,76 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { useAuth } from "@/context/AuthContext";
+
+function getAdminEmails() {
+  return (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+export function AppHeader() {
+  const router = useRouter();
+  const { user, logout } = useAuth();
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const adminEmails = getAdminEmails();
+  const isAdmin =
+    user?.email && adminEmails.includes(user.email.toLowerCase());
+
+  const handleSignOut = async () => {
+    try {
+      setIsSigningOut(true);
+      await logout();
+      router.push("/");
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
+
+  return (
+    <header className="border-b border-base-200">
+      <div className="container mx-auto flex items-center justify-between px-4 py-4">
+        <Link href="/" className="text-lg font-semibold">
+          Dog Walk App
+        </Link>
+        <div className="flex items-center gap-2">
+          <nav className="hidden items-center gap-4 text-sm font-medium md:flex">
+            <Link href="/">Home</Link>
+            {user ? (
+              <>
+                <Link href="/dashboard">Dashboard</Link>
+                <Link href="/dashboard/profile">Profile</Link>
+                {isAdmin ? <Link href="/admin/bookings">Admin</Link> : null}
+              </>
+            ) : (
+              <>
+                <Link href="/#features">Features</Link>
+                <Link href="/#pricing">Pricing</Link>
+                <Link href="/login">Log in</Link>
+              </>
+            )}
+          </nav>
+          <ThemeToggle />
+          {user ? (
+            <button
+              className="btn btn-sm btn-ghost"
+              onClick={handleSignOut}
+              disabled={isSigningOut}
+            >
+              {isSigningOut ? "Signing out..." : "Sign out"}
+            </button>
+          ) : (
+            <Link href="/signup" className="btn btn-sm btn-primary">
+              Get started
+            </Link>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}
+
