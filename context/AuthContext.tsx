@@ -11,8 +11,10 @@ import {
 } from "react";
 import {
   createUserWithEmailAndPassword,
+  GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   updateProfile,
 } from "firebase/auth";
@@ -33,6 +35,7 @@ interface AuthContextValue {
     params: SignupParams
   ) => Promise<{ firebaseUid: string; profile: AppUser }>;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   updateProfileData: (
     update: Partial<Omit<AppUser, "uid" | "email">>
@@ -48,6 +51,9 @@ interface SignupParams {
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: "select_account" });
 
 async function readUserProfile(uid: string): Promise<AppUser | null> {
   const ref = doc(db, "users", uid);
@@ -124,6 +130,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, []);
 
+  const ensureProfileDocument = useCallback(
+    async (firebaseUid: string, fallback: AppUser) => {
+      const existing = await readUserProfile(firebaseUid);
+      if (existing) {
+        setUser(existing);
+        return existing;
+      }
+      const profileData = {
+        name: fallback.name,
+        email: fallback.email,
+        vettingStatus: fallback.vettingStatus,
+        walkTokens: fallback.walkTokens,
+        dogs: fallback.dogs,
+      };
+      await createProfileDocument(firebaseUid, profileData);
+      setUser(fallback);
+      return fallback;
+    },
+    []
+  );
+
   const signup = useCallback(
     async ({ name, email, password }: SignupParams) => {
       const credential = await createUserWithEmailAndPassword(
@@ -155,20 +182,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const login = useCallback(async (email: string, password: string) => {
-    const credential = await signInWithEmailAndPassword(auth, email, password);
-    const profile = await readUserProfile(credential.user.uid);
-    setUser(
-      profile ?? {
+  const login = useCallback(
+    async (email: string, password: string) => {
+      const credential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const existing = await readUserProfile(credential.user.uid);
+      if (existing) {
+        setUser(existing);
+        return;
+      }
+      const fallback: AppUser = {
         uid: credential.user.uid,
         name: credential.user.displayName ?? "",
         email: credential.user.email ?? email,
         vettingStatus: "pending",
         walkTokens: 0,
         dogs: [],
-      }
-    );
-  }, []);
+      };
+      await ensureProfileDocument(credential.user.uid, fallback);
+    },
+    [ensureProfileDocument]
+  );
+
+  const loginWithGoogle = useCallback(async () => {
+    const credential = await signInWithPopup(auth, googleProvider);
+    const firebaseUser = credential.user;
+    const fallback: AppUser = {
+      uid: firebaseUser.uid,
+      name: firebaseUser.displayName ?? "",
+      email: firebaseUser.email ?? "",
+      vettingStatus: "pending",
+      walkTokens: 0,
+      dogs: [],
+    };
+    await ensureProfileDocument(firebaseUser.uid, fallback);
+  }, [ensureProfileDocument]);
 
   const logout = useCallback(async () => {
     await signOut(auth);
@@ -205,6 +256,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loading,
       signup,
       login,
+      loginWithGoogle,
       logout,
       updateProfileData,
       refreshProfile,
@@ -215,6 +267,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loading,
       signup,
       login,
+      loginWithGoogle,
       logout,
       updateProfileData,
       refreshProfile,
