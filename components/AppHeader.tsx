@@ -34,12 +34,12 @@ export function AppHeader() {
   };
 
   return (
-    <header className="border-b border-base-200">
-      <div className="container mx-auto flex items-center justify-between px-4 py-4">
-        <div className="text-4xl tracking-wider font-black flex gap-2 align-baseline">
+    <header className="sticky top-0 z-50 border-b border-base-200/50 bg-base-100/40 backdrop-blur flex justify-between">
+      <div className="px-4 py-4">
+        <div className="text-3xl tracking-wide font-black flex gap-2 align-baseline">
           <LuDog />
           <Link href="/" className="">
-            Mahogany Walks 
+            Mahogany Walks
           </Link>
           <RiToothLine />
         </div>

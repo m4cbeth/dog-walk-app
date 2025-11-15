@@ -3,6 +3,7 @@
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import type { ThemeProviderProps } from "next-themes";
 import type { ReactNode } from "react";
+import { THEMES, THEME_NAMES } from "@/lib/theme-config";
 
 export function ThemeProvider({
   children,
@@ -10,10 +11,10 @@ export function ThemeProvider({
 }: ThemeProviderProps & { children: ReactNode }) {
   return (
     <NextThemesProvider
-      attribute="class"
-      defaultTheme="light"
+      attribute="data-theme"
+      defaultTheme={THEMES.light}
       enableSystem={false}
-      themes={["light", "dark"]}
+      themes={THEME_NAMES}
       {...props}
     >
       {children}

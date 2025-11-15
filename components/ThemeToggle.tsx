@@ -2,6 +2,7 @@
 
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { THEMES, type ThemeName } from "@/lib/theme-config";
 
 function SunIcon() {
   return (
@@ -51,8 +52,11 @@ export function ThemeToggle() {
   }, []);
 
   const handleToggle = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+    const currentTheme = theme as ThemeName;
+    setTheme(currentTheme === THEMES.dark ? THEMES.light : THEMES.dark);
   };
+
+  const isDark = theme === THEMES.dark;
 
   return (
     <button
@@ -62,7 +66,7 @@ export function ThemeToggle() {
       aria-label="Toggle theme"
       disabled={!mounted}
     >
-      {mounted ? (theme === "dark" ? <SunIcon /> : <MoonIcon />) : "..."}
+      {mounted ? (isDark ? <SunIcon /> : <MoonIcon />) : "..."}
     </button>
   );
 }

@@ -1,20 +1,16 @@
 @import "tailwindcss";
 
-:root {
-  color-scheme: light;
-}
-
-html.dark {
-  color-scheme: dark;
-}
-
 @plugin "daisyui" {
-  themes: cupcake --default, dracula --prefersdark;
+  themes: retro --default, forest --prefersdark;
 }
 
-body {
+* {
+  /* border: 1px solid green; */
+}
+
+/* body {
   @apply min-h-screen transition-colors antialiased;
   background-color: var(--color-base-100);
   color: var(--color-base-content);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui;
-}
+} */
