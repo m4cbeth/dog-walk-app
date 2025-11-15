@@ -8,6 +8,10 @@ html.dark {
   color-scheme: dark;
 }
 
+@plugin "daisyui" {
+  themes: cupcake --default, dracula --prefersdark;
+}
+
 body {
   @apply min-h-screen transition-colors antialiased;
   background-color: var(--color-base-100);

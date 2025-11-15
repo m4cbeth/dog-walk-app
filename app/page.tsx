@@ -10,10 +10,10 @@ export default function Home() {
             Trusted neighborhood walkers
           </span>
           <h1 className="text-4xl font-bold leading-tight sm:text-5xl">
-            Potty break, playtime, and a fresh brush—every walk, every time.
+            Potty break, playtime, and a fresh brush. <br /> Every walk, <br /> every time.
           </h1>
           <p className="text-lg text-base-content/70">
-            Keep your pup happy while you tackle your day. Book 15-minute walk
+            Keep your pup happy while you tackle your day. Book 20-minute walk
             slots with vetted walkers, manage your dog’s profile, and track
             tokens from one simple dashboard.
           </p>
@@ -47,7 +47,7 @@ export default function Home() {
             </li>
           </ul>
           <p className="mt-6 text-sm text-base-content/70">
-            Slots open every 15 minutes from noon to midnight. Grab yours before
+            Slots open every 20 minutes from noon to midnight. Grab yours before
             they&apos;re gone!
           </p>
         </div>
@@ -137,7 +137,7 @@ export default function Home() {
         <div className="space-y-3 text-center">
           <h2 className="text-3xl font-semibold">Simple pricing</h2>
           <p className="text-base text-base-content/70">
-            Choose walk packs or a monthly subscription—whatever works for your schedule.
+            Choose walk packs or a monthly subscription, whatever works for your schedule.
           </p>
         </div>
 
@@ -145,7 +145,7 @@ export default function Home() {
           <div>
             <h3 className="mb-4 text-center text-xl font-semibold">Walk Packs</h3>
             <p className="mb-6 text-center text-sm text-base-content/70">
-              Buy walks in packs and use them whenever you need them—no expiration dates.
+              Buy walks in packs and use them whenever you need them, no expiration dates.
             </p>
             <div className="grid gap-6 md:grid-cols-3">
               <div className="rounded-box border border-base-200 bg-base-100 p-8 text-center shadow-md">
