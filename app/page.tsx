@@ -135,43 +135,93 @@ export default function Home() {
 
       <section id="pricing" className="space-y-10">
         <div className="space-y-3 text-center">
-          <h2 className="text-3xl font-semibold">Simple walk packs</h2>
+          <h2 className="text-3xl font-semibold">Simple pricing</h2>
           <p className="text-base text-base-content/70">
-            Token-based pricing keeps every walk predictable.
+            Choose walk packs or a monthly subscription—whatever works for your schedule.
           </p>
         </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          {WALK_PACKS.map((pack) => (
-            <div
-              key={pack.id}
-              className="rounded-box border border-base-200 bg-base-100 p-8 text-center shadow-md"
-            >
-              <h3 className="text-2xl font-semibold">{pack.name}</h3>
-              <p className="mt-2 text-sm text-base-content/70">
-                {pack.tokens} walks •{" "}
-                {(pack.priceCents / 100).toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                })}
-              </p>
-              <p className="mt-4 text-sm text-base-content/70">
-                Use tokens whenever you need them—no expiration dates.
-              </p>
-              <Link href="/signup" className="btn btn-primary mt-6">
-                Get started
-              </Link>
+
+        <div className="space-y-8">
+          <div>
+            <h3 className="mb-4 text-center text-xl font-semibold">Walk Packs</h3>
+            <p className="mb-6 text-center text-sm text-base-content/70">
+              Buy walks in packs and use them whenever you need them—no expiration dates.
+            </p>
+            <div className="grid gap-6 md:grid-cols-3">
+              <div className="rounded-box border border-base-200 bg-base-100 p-8 text-center shadow-md">
+                <h4 className="text-2xl font-semibold">Solo</h4>
+                <p className="mt-2 text-sm text-base-content/70">
+                  1 walk • $30
+                </p>
+                <Link href="/signup" className="btn btn-primary btn-sm mt-6">
+                  Get started
+                </Link>
+              </div>
+              {WALK_PACKS.map((pack) => (
+                <div
+                  key={pack.id}
+                  className="rounded-box border border-base-200 bg-base-100 p-8 text-center shadow-md"
+                >
+                  <h4 className="text-2xl font-semibold">{pack.name}</h4>
+                  <p className="mt-2 text-sm text-base-content/70">
+                    {pack.tokens} walks •{" "}
+                    {(pack.priceCents / 100).toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    })}
+                  </p>
+                  <Link href="/signup" className="btn btn-primary btn-sm mt-6">
+                    Get started
+                  </Link>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          <div>
+            <h3 className="mb-4 text-center text-xl font-semibold">Monthly Subscriptions</h3>
+            <p className="mb-6 text-center text-sm text-base-content/70">
+              Set up a regular routine with weekly walks on a monthly basis.
+            </p>
+            <div className="grid gap-6 md:grid-cols-3">
+              <div className="rounded-box border border-base-200 bg-base-100 p-8 text-center shadow-md">
+                <h4 className="text-2xl font-semibold">2 Walks/Week</h4>
+                <p className="mt-2 text-sm text-base-content/70">
+                  Per month
+                </p>
+                <Link href="/signup" className="btn btn-primary btn-sm mt-6">
+                  Get started
+                </Link>
+              </div>
+              <div className="rounded-box border border-base-200 bg-base-100 p-8 text-center shadow-md">
+                <h4 className="text-2xl font-semibold">3 Walks/Week</h4>
+                <p className="mt-2 text-sm text-base-content/70">
+                  Per month
+                </p>
+                <Link href="/signup" className="btn btn-primary btn-sm mt-6">
+                  Get started
+                </Link>
+              </div>
+              <div className="rounded-box border border-base-200 bg-base-100 p-8 text-center shadow-md">
+                <h4 className="text-2xl font-semibold">5 Walks/Week</h4>
+                <p className="mt-2 text-sm text-base-content/70">
+                  $350 per month
+                </p>
+                <Link href="/signup" className="btn btn-primary btn-sm mt-6">
+                  Get started
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
+
         <p className="text-center text-sm text-base-content/70">
-          Need a custom plan or have multiple pups? Reach out and we&apos;ll
-          tailor a pack for you.
+          Have multiple dogs or need a custom plan? Contact us for special rates.
         </p>
       </section>
-
       <section className="rounded-box bg-base-200 px-6 py-16 text-center md:px-12">
         <h2 className="text-3xl font-semibold">
-          Ready for happier walks and cleaner paws?
+          Ready for happier walks and cleaner teeth?
         </h2>
         <p className="mt-3 text-base text-base-content/70">
           Set up your account in minutes, add your dog&apos;s details, and lock
@@ -189,3 +239,4 @@ export default function Home() {
     </div>
   );
 }
+
