@@ -10,6 +10,7 @@ export interface AppUser {
   uid: string;
   name: string;
   email: string;
+  role: "customer" | "admin";
   vettingStatus: VettingStatus;
   walkTokens: number;
   dogs: DogProfile[];

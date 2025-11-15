@@ -55,6 +55,18 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: "select_account" });
 
+function getAdminEmails(): string[] {
+  return (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+function determineRole(email: string): "customer" | "admin" {
+  const adminEmails = getAdminEmails();
+  return adminEmails.includes(email.toLowerCase()) ? "admin" : "customer";
+}
+
 async function readUserProfile(uid: string): Promise<AppUser | null> {
   const ref = doc(db, "users", uid);
   const snap = await getDoc(ref);
@@ -62,10 +74,12 @@ async function readUserProfile(uid: string): Promise<AppUser | null> {
     return null;
   }
   const data = snap.data();
+  const email = data.email ?? "";
   return {
     uid,
     name: data.name ?? "",
-    email: data.email ?? "",
+    email,
+    role: (data.role ?? determineRole(email)) as "customer" | "admin",
     vettingStatus: (data.vettingStatus ?? "pending") as VettingStatus,
     walkTokens: data.walkTokens ?? 0,
     dogs: (data.dogs ?? []) as DogProfile[],
@@ -112,10 +126,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (profile) {
           setUser(profile);
         } else {
+          const email = firebaseUser.email ?? "";
           const fallback: AppUser = {
             uid: firebaseUser.uid,
             name: firebaseUser.displayName ?? "",
-            email: firebaseUser.email ?? "",
+            email,
+            role: determineRole(email),
             vettingStatus: "pending",
             walkTokens: 0,
             dogs: [],
@@ -140,6 +156,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const profileData = {
         name: fallback.name,
         email: fallback.email,
+        role: fallback.role,
         vettingStatus: fallback.vettingStatus,
         walkTokens: fallback.walkTokens,
         dogs: fallback.dogs,
@@ -160,10 +177,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       );
       await updateProfile(credential.user, { displayName: name });
 
+      const role = determineRole(email);
       const profile: AppUser = {
         uid: credential.user.uid,
         name,
         email,
+        role,
         vettingStatus: "pending",
         walkTokens: 0,
         dogs: [],
@@ -171,6 +190,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const profileData = {
         name: profile.name,
         email: profile.email,
+        role: profile.role,
         vettingStatus: profile.vettingStatus,
         walkTokens: profile.walkTokens,
         dogs: profile.dogs,
@@ -194,10 +214,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(existing);
         return;
       }
+      const userEmail = credential.user.email ?? email;
       const fallback: AppUser = {
         uid: credential.user.uid,
         name: credential.user.displayName ?? "",
-        email: credential.user.email ?? email,
+        email: userEmail,
+        role: determineRole(userEmail),
         vettingStatus: "pending",
         walkTokens: 0,
         dogs: [],
@@ -210,10 +232,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginWithGoogle = useCallback(async () => {
     const credential = await signInWithPopup(auth, googleProvider);
     const firebaseUser = credential.user;
+    const email = firebaseUser.email ?? "";
     const fallback: AppUser = {
       uid: firebaseUser.uid,
       name: firebaseUser.displayName ?? "",
-      email: firebaseUser.email ?? "",
+      email,
+      role: determineRole(email),
       vettingStatus: "pending",
       walkTokens: 0,
       dogs: [],

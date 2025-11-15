@@ -55,27 +55,27 @@ export default function Home() {
 
       <section id="features" className="space-y-10">
         <div className="space-y-3 text-center">
-          <h2 className="text-3xl font-semibold">More than just a walk</h2>
+          <h2 className="text-3xl font-semibold">Daily walks + fresh breath training</h2>
           <p className="text-base text-base-content/70">
-            Every visit covers the essentials so you can relax.
+            Anyone can take a walk around the block. We care about your pup's teeth!
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {[
             {
-              title: "Potty break",
+              title: "20-minute neighborhood walks",
               description:
-                "Quick relief and a hydration check to keep tails wagging.",
+                "Potty breaks, sniff time, and enough movement to tire them out without wearing them down.",
             },
             {
-              title: "Play session",
+              title: "Play or socialize (their choice)",
               description:
-                "We squeeze in fetch or tug to burn energy and brighten moods.",
+                "Some pups love other dogs. Some want solo fetch. We match their energy, not ours.",
             },
             {
-              title: "Brush & update",
+              title: "Fresh Breath Club™",
               description:
-                "Light grooming plus notes so you know exactly how it went.",
+                "We train daily teeth brushing: the #1 one thing vets beg you to do but nobody actually does.",
             },
           ].map((feature) => (
             <div
@@ -95,28 +95,28 @@ export default function Home() {
         <div className="space-y-3 text-center">
           <h2 className="text-3xl font-semibold">How it works</h2>
           <p className="text-base text-base-content/70">
-            A seamless flow from signup to confirmation.
+            Three steps to a happier, fresher-breath pup.
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {[
             {
               step: "1",
-              title: "Create your profile",
+              title: "Book your first free walk",
               description:
-                "Share your dog’s info, routines, and any special notes.",
+                "Meet us, see if we vibe, zero commitment.",
             },
             {
               step: "2",
-              title: "Buy walk tokens",
+              title: "Pick Your Plan",
               description:
-                "Choose a walk pack that fits your schedule and budget.",
+                "One-off walks or daily routine, you get to pick!",
             },
             {
               step: "3",
-              title: "Book in minutes",
+              title: "We Handle the Rest",
               description:
-                "Pick a 15-minute slot and get instant confirmation.",
+                "Potty breaks, play time, and fresh breath training.",
             },
           ].map((item) => (
             <div
