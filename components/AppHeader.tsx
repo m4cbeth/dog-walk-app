@@ -45,7 +45,7 @@ export function AppHeader() {
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <nav className="hidden items-center gap-4 text-sm font-medium md:flex">
+        <nav className="hidden items-center gap-4 text-lg font-medium md:flex">
           <Link href="/">Home</Link>
           {user ? (
             <>
@@ -64,17 +64,17 @@ export function AppHeader() {
         <ThemeToggle />
         {user ? (
           <button
-            className="btn btn-sm btn-ghost"
+            className="btn btn-lg btn-ghost  "
             onClick={handleSignOut}
             disabled={isSigningOut}
           >
             {isSigningOut ? "Signing out..." : "Sign out"}
           </button>
         ) : (
-          <Link href="/signup" className="btn btn-sm btn-primary">
+          <Link href="/signup" className="btn btn-lg btn-primary">
             Get started
           </Link>
-        )}
+        )} 
       </div>
     </header>
   );
