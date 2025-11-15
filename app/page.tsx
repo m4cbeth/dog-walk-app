@@ -4,7 +4,7 @@ import { WALK_PACKS } from "@/lib/walkPacks";
 export default function Home() {
   return (
     <div className="space-y-24">
-      <section className="grid gap-10 rounded-box bg-gradient-to-br from-primary/5 via-transparent to-secondary/10 px-6 py-16 md:grid-cols-2 md:items-center md:px-12">
+      <section className="grid gap-10 rounded-box bg-linear-to-br from-primary/5 via-transparent to-secondary/10 px-6 py-16 md:grid-cols-2 md:items-center md:px-12">
         <div className="space-y-6">
           <span className="badge badge-primary badge-outline">
             Trusted neighborhood walkers
