@@ -4,6 +4,7 @@ export interface DogProfile {
   name: string;
   breed: string;
   age: number;
+  notes: string;
 }
 
 export interface AppUser {
@@ -14,5 +15,12 @@ export interface AppUser {
   vettingStatus: VettingStatus;
   walkTokens: number;
   dogs: DogProfile[];
+  paysMonthly: boolean;
+  mondayWalkTime: number | null; // 24 hour time
+  tuesdayWalkTime: number | null; // 24 hour time
+  wednesdayWalkTime: number | null; // 24 hour time
+  thursdayWalkTime: number | null; // 24 hour time
+  fridayWalkTime: number | null; // 24 hour time
+  saturdayWalkTime: number | null; // 24 hour time
+  sundayWalkTime: number | null; // 24 hour time
 }
-

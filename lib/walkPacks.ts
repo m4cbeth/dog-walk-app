@@ -13,7 +13,7 @@ export interface WalkPack extends WalkPackDefinition {
 export const WALK_PACKS: WalkPackDefinition[] = [
   {
     id: "solo_walk",
-    name: "Solo Walk",
+    name: "Walk + Teeth Brush",
     tokens: 1,
     priceCents: 2975,
     stripePriceEnvVar: "STRIPE_PRICE_SINGLE_VISIT",

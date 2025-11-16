@@ -83,6 +83,21 @@ async function readUserProfile(uid: string): Promise<AppUser | null> {
     vettingStatus: (data.vettingStatus ?? "pending") as VettingStatus,
     walkTokens: data.walkTokens ?? 0,
     dogs: (data.dogs ?? []) as DogProfile[],
+    paysMonthly: data.paysMonthly ?? false,
+    mondayWalkTime:
+      (data.mondayWalkTime as number | null | undefined) ?? null,
+    tuesdayWalkTime:
+      (data.tuesdayWalkTime as number | null | undefined) ?? null,
+    wednesdayWalkTime:
+      (data.wednesdayWalkTime as number | null | undefined) ?? null,
+    thursdayWalkTime:
+      (data.thursdayWalkTime as number | null | undefined) ?? null,
+    fridayWalkTime:
+      (data.fridayWalkTime as number | null | undefined) ?? null,
+    saturdayWalkTime:
+      (data.saturdayWalkTime as number | null | undefined) ?? null,
+    sundayWalkTime:
+      (data.sundayWalkTime as number | null | undefined) ?? null,
   };
 }
 
@@ -133,8 +148,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             email,
             role: determineRole(email),
             vettingStatus: "pending",
-            walkTokens: 0,
+            walkTokens: 1,
             dogs: [],
+            paysMonthly: false,
+            mondayWalkTime: null,
+            tuesdayWalkTime: null,
+            wednesdayWalkTime: null,
+            thursdayWalkTime: null,
+            fridayWalkTime: null,
+            saturdayWalkTime: null,
+            sundayWalkTime: null,
           };
           setUser(fallback);
         }
@@ -160,6 +183,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         vettingStatus: fallback.vettingStatus,
         walkTokens: fallback.walkTokens,
         dogs: fallback.dogs,
+        paysMonthly: fallback.paysMonthly,
+        mondayWalkTime: fallback.mondayWalkTime,
+        tuesdayWalkTime: fallback.tuesdayWalkTime,
+        wednesdayWalkTime: fallback.wednesdayWalkTime,
+        thursdayWalkTime: fallback.thursdayWalkTime,
+        fridayWalkTime: fallback.fridayWalkTime,
+        saturdayWalkTime: fallback.saturdayWalkTime,
+        sundayWalkTime: fallback.sundayWalkTime,
       };
       await createProfileDocument(firebaseUid, profileData);
       setUser(fallback);
@@ -184,8 +215,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email,
         role,
         vettingStatus: "pending",
-        walkTokens: 0,
+        walkTokens: 1,
         dogs: [],
+        paysMonthly: false,
+        mondayWalkTime: null,
+        tuesdayWalkTime: null,
+        wednesdayWalkTime: null,
+        thursdayWalkTime: null,
+        fridayWalkTime: null,
+        saturdayWalkTime: null,
+        sundayWalkTime: null,
       };
       const profileData = {
         name: profile.name,
@@ -194,6 +233,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         vettingStatus: profile.vettingStatus,
         walkTokens: profile.walkTokens,
         dogs: profile.dogs,
+        paysMonthly: profile.paysMonthly,
+        mondayWalkTime: profile.mondayWalkTime,
+        tuesdayWalkTime: profile.tuesdayWalkTime,
+        wednesdayWalkTime: profile.wednesdayWalkTime,
+        thursdayWalkTime: profile.thursdayWalkTime,
+        fridayWalkTime: profile.fridayWalkTime,
+        saturdayWalkTime: profile.saturdayWalkTime,
+        sundayWalkTime: profile.sundayWalkTime,
       };
       await createProfileDocument(credential.user.uid, profileData);
       setUser(profile);
@@ -221,8 +268,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email: userEmail,
         role: determineRole(userEmail),
         vettingStatus: "pending",
-        walkTokens: 0,
+        walkTokens: 1,
         dogs: [],
+        paysMonthly: false,
+        mondayWalkTime: null,
+        tuesdayWalkTime: null,
+        wednesdayWalkTime: null,
+        thursdayWalkTime: null,
+        fridayWalkTime: null,
+        saturdayWalkTime: null,
+        sundayWalkTime: null,
       };
       await ensureProfileDocument(credential.user.uid, fallback);
     },
@@ -239,8 +294,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email,
       role: determineRole(email),
       vettingStatus: "pending",
-      walkTokens: 0,
+      walkTokens: 1,
       dogs: [],
+      paysMonthly: false,
+      mondayWalkTime: null,
+      tuesdayWalkTime: null,
+      wednesdayWalkTime: null,
+      thursdayWalkTime: null,
+      fridayWalkTime: null,
+      saturdayWalkTime: null,
+      sundayWalkTime: null,
     };
     await ensureProfileDocument(firebaseUser.uid, fallback);
   }, [ensureProfileDocument]);

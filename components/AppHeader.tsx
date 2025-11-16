@@ -49,8 +49,8 @@ export function AppHeader() {
           <Link href="/">Home</Link>
           {user ? (
             <>
-              <Link href="/dashboard">Dashboard</Link>
-              <Link href="/dashboard/profile">Profile</Link>
+              {!isAdmin ? <Link href="/dashboard">Dashboard</Link> : null}
+              {!isAdmin ? <Link href="/dashboard/profile">Profile</Link> : null}
               {isAdmin ? <Link href="/admin/bookings">Admin</Link> : null}
             </>
           ) : (
@@ -61,20 +61,20 @@ export function AppHeader() {
             </>
           )}
         </nav>
-        <ThemeToggle />
         {user ? (
           <button
-            className="btn btn-lg btn-ghost  "
-            onClick={handleSignOut}
-            disabled={isSigningOut}
+          className="btn btn-lg btn-ghost  "
+          onClick={handleSignOut}
+          disabled={isSigningOut}
           >
             {isSigningOut ? "Signing out..." : "Sign out"}
           </button>
         ) : (
           <Link href="/signup" className="btn btn-lg btn-primary">
-            Get started
+            Book Your Free Walk!
           </Link>
         )} 
+        <ThemeToggle />
       </div>
     </header>
   );

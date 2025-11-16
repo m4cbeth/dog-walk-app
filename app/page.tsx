@@ -173,7 +173,7 @@ export default function Home() {
                 >
                   <h4 className="text-2xl font-semibold">{pack.name}</h4>
                   <p className="mt-2 text-sm text-white/70">
-                    {pack.tokens} walks •{" "}
+                    {pack.tokens} {pack.tokens > 1 ? "walks" : "walk"} •{" "}
                     {(pack.priceCents / 100).toLocaleString("en-US", {
                       style: "currency",
                       currency: "USD",
@@ -188,10 +188,10 @@ export default function Home() {
           </div>
 
           <div>
-            <h3 className="mb-4 text-center text-xl font-semibold">
+            <h3 className="mb-4 text-center text-5xl font-black">
               Monthly Subscriptions
             </h3>
-            <p className="mb-6 text-center text-sm text-base-content/70">
+            <p className="mb-6 text-center text-3xl text-base-content/70">
               Set up a regular routine with weekly walks on a monthly basis.
             </p>
             <div className="grid gap-6 md:grid-cols-3">
@@ -202,22 +202,25 @@ export default function Home() {
                 },
                 {
                   title: "3 Walks/Week",
-                  price: "$249.75er month",
+                  price: "$249.75 per month",
                 },
                 {
-                  title: "5 Walks/Week",
+                  title: "360° Coverage (5/wk)",
                   price: "$360.00 per month",
                 },
-              ].map((subscription) => (
+              ].map((subscription, idx) => (
                 <div
+                  style={idx===2?{boxShadow: '0 0 20px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0,0,0,.5)'}:{}}
                   key={subscription.title}
-                  className="rounded-box border border-base-200 bg-primary-content p-8 text-center shadow-md"
+                  className="rounded-box border border-base-200 text-primary bg-primary-content p-8 text-center shadow-md"
                 >
-                  <h4 className="text-2xl font-semibold">{subscription.title}</h4>
-                  <p className="mt-2 text-sm text-base-content/70">
+                  <h4
+                  style={idx === 2 ? {textShadow: '0 0 20px rgba(236, 72, 153, 0.5), 0 0 40px rgba(168, 85, 247, 0.3)'} : {}} 
+                  className={`text-2xl font-semibold ${idx === 2 ? "bg-linear-to-br from-indigo-300 via-cyan-300 to-violet-300  bg-clip-text text-transparent" : ""}`}>{subscription.title}</h4>
+                  <p className="mt-2 text-sm text-white/70">
                     {subscription.price}
                   </p>
-                  <Link href="/signup" className="btn btn-primary btn-sm mt-6">
+                  <Link href="/signup" className={`btn btn-primary btn-sm mt-6 ${idx === 2 ? " bg-linear-to-r from-cyan-300 to-indigo-500" : ""}`}>
                     Get started
                   </Link>
                 </div>
@@ -226,7 +229,7 @@ export default function Home() {
           </div>
         </div>
 
-        <p className="text-center text-sm text-base-content/70">
+        <p className="text-center text-lg text-base-content/70">
           Have multiple dogs or need a custom plan? Contact us for special rates.
         </p>
       </section>
