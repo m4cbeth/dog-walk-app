@@ -2,17 +2,34 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { GoogleIcon } from "@/components/GoogleIcon";
 
 export default function SignupPage() {
   const router = useRouter();
-  const { signup, loginWithGoogle } = useAuth();
+  const { user, loading, signup, loginWithGoogle } = useAuth();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace("/dashboard");
+    }
+  }, [loading, router, user]);
+
+  if (!loading && user) {
+    return (
+      <div className="flex justify-center py-16">
+        <div className="space-y-2 text-center">
+          <span className="loading loading-spinner loading-lg" aria-label="Redirecting" />
+          <p className="text-sm text-base-content/70">Redirecting to your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = event.target;

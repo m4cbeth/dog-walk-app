@@ -41,7 +41,7 @@ export default function RootLayout({
               <footer className="border-t border-base-200 py-6">
                 <div className="container mx-auto flex flex-col gap-2 px-4 text-sm text-base-content/70 md:flex-row md:items-center md:justify-between">
                   <span>© {new Date().getFullYear()} Mahogany Walks</span>
-                  <span>Sleepy pups, clean teeth, happy owners.</span>
+                  <span>Sleepy Pups, Clean Teeth, Happy Owners.</span>
                 </div>
               </footer>
             </div>

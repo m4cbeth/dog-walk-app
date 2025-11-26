@@ -5,9 +5,9 @@ import { RiToothLine } from "react-icons/ri";
 export default function Home() {
   return (
     <div className="space-y-24">
-      <section className="grid gap-10 rounded-box bg-linear-to-br from-cyan-500/20 via-teal-700/40 to-secondary/30 px-6 py-16 md:grid-cols-2 md:items-center md:px-12">
+      <section className="grid gap-10 rounded-box bg-linear-to-br from-accent-content/20 via-primary/40 to-secondary/30 px-6 py-16 md:grid-cols-2 md:items-center md:px-12">
         <div className="space-y-6">
-          <span className="text-xl p-4 badge badge-primary badge-outline">
+          <span className="text-white text-xl p-4 badge badge-primary badge-outline">
             Trusted neighborhood walkers
           </span>
           <h1 className="text-4xl font-bold leading-tight sm:text-5xl">
@@ -23,9 +23,7 @@ export default function Home() {
             <br /> every time.
           </h1>
           <p className="text-lg text-base-content/70">
-            Keep your pup happy while you tackle your day. Book 20-minute walk
-            slots with vetted walkers, manage your dog’s profile, and track
-            walks from one simple dashboard.
+            Your dog’s daily happiness, handled. Pick your plan, choose your days, and relax. We’ve get the rest.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Link href="/signup" className="btn btn-primary">
@@ -124,7 +122,7 @@ export default function Home() {
               step: "2",
               title: "Pick Your Plan",
               description:
-                "One-off walks or daily routine, you get to pick!",
+                "2, 3 or 5 walk routines, you get to pick!",
             },
             {
               step: "3",
@@ -153,12 +151,12 @@ export default function Home() {
             Simple pricing
           </h2>
           <p className="text-base-content/70 text-2xl mt-5">
-            Choose walk packs or a monthly subscription, whatever works for your schedule.
+            Choose how many walks work for you and your pup!
           </p>
         </div>
 
         <div className="space-y-8">
-          <div>
+          {/* <div>
             <h3 className="mb-4 text-center text-5xl font-black">
               Walk Packs
             </h3>
@@ -185,28 +183,31 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
 
           <div>
-            <h3 className="mb-4 text-center text-5xl font-black">
+            {/* <h3 className="mb-4 text-center text-5xl font-black">
               Monthly Subscriptions
             </h3>
             <p className="mb-6 text-center text-3xl text-base-content/70">
               Set up a regular routine with weekly walks on a monthly basis.
-            </p>
+            </p> */}
             <div className="grid gap-6 md:grid-cols-3">
               {[
                 {
                   title: "2 Walks/Week",
-                  price: "$149.75 per month",
+                  price: "$249 per month",
+                  body: "Two visits a week for busy families. Each visit includes a walk, potty break, playtime, and gentle teeth-brushing training. Perfect for maintaining healthy routines.",
                 },
                 {
                   title: "3 Walks/Week",
-                  price: "$249.75 per month",
+                  price: "$299 per month",
+                  body: "",
                 },
                 {
                   title: "360° Coverage (5/wk)",
-                  price: "$360.00 per month",
+                  price: "$449 per month",
+                  body: "",
                 },
               ].map((subscription, idx) => (
                 <div
@@ -229,8 +230,12 @@ export default function Home() {
           </div>
         </div>
 
+        <p className="text-center text-2xl text-base-content/90">
+          Cancel anytime for a full refund on unused visits.
+        </p>
+
         <p className="text-center text-lg text-base-content/70">
-          Have multiple dogs or need a custom plan? Contact us for special rates.
+          Have multiple dogs or need a custom plan? Book your first walk and we'll discuss rates.
         </p>
       </section>
       <section className="rounded-box bg-base-200 px-6 py-16 text-center md:px-12">
@@ -238,8 +243,7 @@ export default function Home() {
           Ready for happier walks and cleaner teeth?
         </h2>
         <p className="mt-3 text-base text-base-content/70">
-          Set up your account in minutes, add your dog&apos;s details, and lock
-          in your favorite walk slots.
+          Set up your account in minutes, add your dog&apos;s details, and book your first free walk.
         </p>
         <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
           <Link href="/signup" className="btn btn-primary">

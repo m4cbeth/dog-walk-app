@@ -44,7 +44,7 @@ export default function DashboardPage() {
         user.vettingStatus === "pending" ? (
           <>
             <div className="alert alert-info">
-              <FaCircleInfo />
+              <FaCircleInfo /> 
               <span>Pick a time for your free walk and vibe check!</span>
             </div>
             <BookingCalendar />
