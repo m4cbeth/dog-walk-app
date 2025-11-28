@@ -1,21 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { WALK_PACKS } from "@/lib/walkPacks";
+import { WALK_SUBSCRIPTIONS } from "@/lib/walkPacks";
 import { useAuth } from "@/context/AuthContext";
-
-const currency = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
 
 export function WalkPackPurchase() {
   const { getIdToken, user } = useAuth();
-  const [loadingPack, setLoadingPack] = useState<string | null>(null);
+  const [loadingSubscription, setLoadingSubscription] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handlePurchase = async (packId: string) => {
-    setLoadingPack(packId);
+  const handleSubscribe = async (subscriptionId: string) => {
+    setLoadingSubscription(subscriptionId);
     setError(null);
     try {
       const idToken = await getIdToken();
@@ -25,7 +20,7 @@ export function WalkPackPurchase() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${idToken}`,
         },
-        body: JSON.stringify({ packId }),
+        body: JSON.stringify({ subscriptionId }),
       });
       const data = await response.json();
       if (!response.ok || !data.url) {
@@ -37,36 +32,46 @@ export function WalkPackPurchase() {
         err instanceof Error ? err.message : "Unable to start checkout."
       );
     } finally {
-      setLoadingPack(null);
+      setLoadingSubscription(null);
     }
   };
 
   if (!user) {
     return (
       <div className="alert alert-info">
-        <span>Sign in to purchase walk packs.</span>
+        <span>Sign in to purchase subscriptions.</span>
+      </div>
+    );
+  }
+
+  if (!user.isVetted) {
+    return (
+      <div className="alert alert-info">
+        <span>Complete your free walk to subscribe to a plan.</span>
       </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-2">
-        {WALK_PACKS.map((pack) => (
+      <div className="grid gap-4 md:grid-cols-3">
+        {WALK_SUBSCRIPTIONS.map((subscription) => (
           <div
-            key={pack.id}
+            key={subscription.id}
             className="rounded-box border border-base-200 bg-base-100 p-5 shadow-sm"
           >
-            <h3 className="text-lg font-semibold">{pack.name}</h3>
+            <h3 className="text-lg font-semibold">{subscription.name}</h3>
             <p className="text-sm text-base-content/70">
-              {pack.tokens} walk tokens · {currency.format(pack.priceCents / 100)}
+              {subscription.walksPerWeek} walks per week
             </p>
             <button
               className="btn btn-primary mt-4 w-full"
-              onClick={() => handlePurchase(pack.id)}
-              disabled={loadingPack === pack.id}
+              onClick={() => handleSubscribe(subscription.id)}
+              disabled={loadingSubscription === subscription.id}
             >
-              {loadingPack === pack.id ? "Redirecting..." : "Buy now"}
+              {loadingSubscription === subscription.id
+                ? "Redirecting..."
+                : "Subscribe"}
             </button>
           </div>
         ))}
@@ -79,4 +84,3 @@ export function WalkPackPurchase() {
     </div>
   );
 }
-

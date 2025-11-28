@@ -7,7 +7,6 @@ interface AdminBooking {
   id: string;
   userName: string;
   userEmail: string;
-  dogName: string;
   startTime: string;
   status: string;
 }
@@ -104,7 +103,6 @@ export default function AdminBookingsPage() {
                 <th>Time</th>
                 <th>Owner</th>
                 <th>Email</th>
-                <th>Dog</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -117,7 +115,6 @@ export default function AdminBookingsPage() {
                     <td>{date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</td>
                     <td>{booking.userName}</td>
                     <td>{booking.userEmail}</td>
-                    <td>{booking.dogName}</td>
                     <td className="capitalize">{booking.status}</td>
                   </tr>
                 );

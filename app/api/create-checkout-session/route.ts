@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { getStripeClient } from "@/lib/stripe";
-import { resolveWalkPack } from "@/lib/walkPacks";
+import { resolveWalkSubscription } from "@/lib/walkPacks";
 import { verifyFirebaseIdToken } from "@/lib/firebase-admin";
 
 interface CheckoutRequestBody {
-  packId: string;
+  subscriptionId: string;
   successUrl?: string;
   cancelUrl?: string;
 }
@@ -23,10 +23,10 @@ export async function POST(request: Request) {
     const decoded = await verifyFirebaseIdToken(idToken);
 
     const body = (await request.json()) as CheckoutRequestBody;
-    const pack = resolveWalkPack(body.packId);
-    if (!pack) {
+    const subscription = resolveWalkSubscription(body.subscriptionId);
+    if (!subscription) {
       return NextResponse.json(
-        { error: "Invalid walk pack" },
+        { error: "Invalid subscription" },
         { status: 400 }
       );
     }
@@ -36,25 +36,42 @@ export async function POST(request: Request) {
       request.headers.get("origin") ??
       new URL(request.url).origin;
 
+    // For subscriptions, we need to get the default price from the product
+    const product = await stripe.products.retrieve(subscription.stripeProductId);
+    const prices = await stripe.prices.list({
+      product: subscription.stripeProductId,
+      active: true,
+      type: 'recurring',
+    });
+
+    if (prices.data.length === 0) {
+      return NextResponse.json(
+        { error: "No active price found for this product" },
+        { status: 400 }
+      );
+    }
+
+    const priceId = prices.data[0]!.id;
+
     const session = await stripe.checkout.sessions.create({
-      mode: "payment",
+      mode: "subscription",
       success_url:
         body.successUrl ??
-        `${origin}/dashboard?checkout=success&pack=${pack.id}`,
+        `${origin}/dashboard?checkout=success&subscription=${subscription.id}`,
       cancel_url:
         body.cancelUrl ??
         `${origin}/dashboard?checkout=cancelled`,
       line_items: [
         {
-          price: pack.stripePriceId,
+          price: priceId,
           quantity: 1,
         },
       ],
       customer_email: decoded.email ?? undefined,
       metadata: {
         uid: decoded.uid,
-        tokens: String(pack.tokens),
-        packId: pack.id,
+        walksPerWeek: String(subscription.walksPerWeek),
+        subscriptionId: subscription.id,
       },
     });
 
@@ -67,4 +84,3 @@ export async function POST(request: Request) {
     );
   }
 }
-

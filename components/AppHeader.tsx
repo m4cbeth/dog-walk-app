@@ -50,8 +50,12 @@ export function AppHeader() {
           {user ? (
             <>
               {!isAdmin ? <Link href="/dashboard">Dashboard</Link> : null}
-              {!isAdmin ? <Link href="/dashboard/profile">Profile</Link> : null}
-              {isAdmin ? <Link href="/admin/bookings">Admin</Link> : null}
+              {isAdmin ? (
+                <>
+                  <Link href="/admin/users">Users</Link>
+                  <Link href="/admin/bookings">Bookings</Link>
+                </>
+              ) : null}
             </>
           ) : (
             <>

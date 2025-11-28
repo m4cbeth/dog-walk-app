@@ -27,24 +27,33 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
+  // Handle subscription created/updated
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const uid = session.metadata?.uid;
-    const tokens = Number(session.metadata?.tokens ?? 0);
+    const walksPerWeek = Number(session.metadata?.walksPerWeek ?? 0);
+    const subscriptionId = session.metadata?.subscriptionId;
 
-    if (uid && tokens > 0) {
+    if (uid && subscriptionId && session.mode === "subscription") {
       const db = getAdminDb();
       const userRef = db.collection("users").doc(uid);
-      await userRef.set(
-        {
-          walkTokens: FieldValue.increment(tokens),
-          lastPurchaseAt: FieldValue.serverTimestamp(),
-        },
-        { merge: true }
-      );
+      
+      // Update user with subscription info
+      await userRef.update({
+        walksPerWeek: walksPerWeek || 1,
+        subscriptionId: session.subscription as string,
+        updatedAt: FieldValue.serverTimestamp(),
+      });
     }
+  }
+
+  // Handle subscription updates
+  if (event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted") {
+    const subscription = event.data.object as Stripe.Subscription;
+    // You can add logic here to handle subscription changes
+    // For now, we'll just log it
+    console.log("Subscription updated:", subscription.id);
   }
 
   return NextResponse.json({ received: true });
 }
-

@@ -5,7 +5,6 @@ export interface Booking {
   userId: string;
   userName: string;
   userEmail: string;
-  dogName: string;
   startTime: string;
   status: BookingStatus;
 }

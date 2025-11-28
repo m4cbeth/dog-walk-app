@@ -1,50 +1,45 @@
-export interface WalkPackDefinition {
+export interface WalkSubscription {
   id: string;
   name: string;
-  tokens: number;
-  priceCents: number;
-  stripePriceEnvVar: string;
+  walksPerWeek: number;
+  stripeProductIdEnvVar: string;
 }
 
-export interface WalkPack extends WalkPackDefinition {
-  stripePriceId: string;
+export interface WalkSubscriptionWithId extends WalkSubscription {
+  stripeProductId: string;
 }
 
-export const WALK_PACKS: WalkPackDefinition[] = [
+export const WALK_SUBSCRIPTIONS: WalkSubscription[] = [
   {
-    id: "solo_walk",
-    name: "Walk + Teeth Brush",
-    tokens: 1,
-    priceCents: 2975,
-    stripePriceEnvVar: "STRIPE_PRICE_SINGLE_VISIT",
+    id: "2_walks_week",
+    name: "2 Walks/Week",
+    walksPerWeek: 2,
+    stripeProductIdEnvVar: "STRIPE_PRODUCT_ID_2_WALKS_A_WEEK",
   },
   {
-    id: "pack_5",
-    name: "5 Walk Pack",
-    tokens: 5,
-    priceCents: 9975,
-    stripePriceEnvVar: "STRIPE_PRICE_PACK_5",
+    id: "3_walks_week",
+    name: "3 Walks/Week",
+    walksPerWeek: 3,
+    stripeProductIdEnvVar: "STRIPE_PRODUCT_ID_3_WALKS_A_WEEK",
   },
   {
-    id: "pack_10",
-    name: "10 Walk Pack",
-    tokens: 10,
-    priceCents: 14975,
-    stripePriceEnvVar: "STRIPE_PRICE_PACK_10",
+    id: "5_walks_week",
+    name: "5 Walks/Week",
+    walksPerWeek: 5,
+    stripeProductIdEnvVar: "STRIPE_PRODUCT_ID_5_WALKS_A_WEEK",
   },
 ];
 
-export function resolveWalkPack(packId: string): WalkPack | null {
-  const definition = WALK_PACKS.find((pack) => pack.id === packId);
+export function resolveWalkSubscription(subscriptionId: string): WalkSubscriptionWithId | null {
+  const definition = WALK_SUBSCRIPTIONS.find((sub) => sub.id === subscriptionId);
   if (!definition) {
     return null;
   }
-  const stripePriceId = process.env[definition.stripePriceEnvVar];
-  if (!stripePriceId) {
+  const stripeProductId = process.env[definition.stripeProductIdEnvVar];
+  if (!stripeProductId) {
     throw new Error(
-      `Missing Stripe price env var: ${definition.stripePriceEnvVar}`
+      `Missing Stripe product env var: ${definition.stripeProductIdEnvVar}`
     );
   }
-  return { ...definition, stripePriceId };
+  return { ...definition, stripeProductId };
 }
-

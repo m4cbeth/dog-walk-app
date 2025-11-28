@@ -26,7 +26,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
-import type { AppUser, DogProfile, VettingStatus } from "@/types/user";
+import type { AppUser } from "@/types/user";
 
 interface AuthContextValue {
   user: AppUser | null;
@@ -80,24 +80,9 @@ async function readUserProfile(uid: string): Promise<AppUser | null> {
     name: data.name ?? "",
     email,
     role: (data.role ?? determineRole(email)) as "customer" | "admin",
-    vettingStatus: (data.vettingStatus ?? "pending") as VettingStatus,
-    walkTokens: data.walkTokens ?? 0,
-    dogs: (data.dogs ?? []) as DogProfile[],
-    paysMonthly: data.paysMonthly ?? false,
-    mondayWalkTime:
-      (data.mondayWalkTime as number | null | undefined) ?? null,
-    tuesdayWalkTime:
-      (data.tuesdayWalkTime as number | null | undefined) ?? null,
-    wednesdayWalkTime:
-      (data.wednesdayWalkTime as number | null | undefined) ?? null,
-    thursdayWalkTime:
-      (data.thursdayWalkTime as number | null | undefined) ?? null,
-    fridayWalkTime:
-      (data.fridayWalkTime as number | null | undefined) ?? null,
-    saturdayWalkTime:
-      (data.saturdayWalkTime as number | null | undefined) ?? null,
-    sundayWalkTime:
-      (data.sundayWalkTime as number | null | undefined) ?? null,
+    isVetted: data.isVetted ?? false,
+    walksPerWeek: data.walksPerWeek ?? 1,
+    firstFreeWalkBookingId: data.firstFreeWalkBookingId ?? null,
   };
 }
 
@@ -147,17 +132,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             name: firebaseUser.displayName ?? "",
             email,
             role: determineRole(email),
-            vettingStatus: "pending",
-            walkTokens: 1,
-            dogs: [],
-            paysMonthly: false,
-            mondayWalkTime: null,
-            tuesdayWalkTime: null,
-            wednesdayWalkTime: null,
-            thursdayWalkTime: null,
-            fridayWalkTime: null,
-            saturdayWalkTime: null,
-            sundayWalkTime: null,
+            isVetted: false,
+            walksPerWeek: 1,
+            firstFreeWalkBookingId: null,
           };
           setUser(fallback);
         }
@@ -180,17 +157,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: fallback.name,
         email: fallback.email,
         role: fallback.role,
-        vettingStatus: fallback.vettingStatus,
-        walkTokens: fallback.walkTokens,
-        dogs: fallback.dogs,
-        paysMonthly: fallback.paysMonthly,
-        mondayWalkTime: fallback.mondayWalkTime,
-        tuesdayWalkTime: fallback.tuesdayWalkTime,
-        wednesdayWalkTime: fallback.wednesdayWalkTime,
-        thursdayWalkTime: fallback.thursdayWalkTime,
-        fridayWalkTime: fallback.fridayWalkTime,
-        saturdayWalkTime: fallback.saturdayWalkTime,
-        sundayWalkTime: fallback.sundayWalkTime,
+        isVetted: fallback.isVetted,
+        walksPerWeek: fallback.walksPerWeek,
+        firstFreeWalkBookingId: fallback.firstFreeWalkBookingId,
       };
       await createProfileDocument(firebaseUid, profileData);
       setUser(fallback);
@@ -214,33 +183,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name,
         email,
         role,
-        vettingStatus: "pending",
-        walkTokens: 1,
-        dogs: [],
-        paysMonthly: false,
-        mondayWalkTime: null,
-        tuesdayWalkTime: null,
-        wednesdayWalkTime: null,
-        thursdayWalkTime: null,
-        fridayWalkTime: null,
-        saturdayWalkTime: null,
-        sundayWalkTime: null,
+        isVetted: false,
+        walksPerWeek: 1,
+        firstFreeWalkBookingId: null,
       };
       const profileData = {
         name: profile.name,
         email: profile.email,
         role: profile.role,
-        vettingStatus: profile.vettingStatus,
-        walkTokens: profile.walkTokens,
-        dogs: profile.dogs,
-        paysMonthly: profile.paysMonthly,
-        mondayWalkTime: profile.mondayWalkTime,
-        tuesdayWalkTime: profile.tuesdayWalkTime,
-        wednesdayWalkTime: profile.wednesdayWalkTime,
-        thursdayWalkTime: profile.thursdayWalkTime,
-        fridayWalkTime: profile.fridayWalkTime,
-        saturdayWalkTime: profile.saturdayWalkTime,
-        sundayWalkTime: profile.sundayWalkTime,
+        isVetted: profile.isVetted,
+        walksPerWeek: profile.walksPerWeek,
+        firstFreeWalkBookingId: profile.firstFreeWalkBookingId,
       };
       await createProfileDocument(credential.user.uid, profileData);
       setUser(profile);
@@ -267,17 +220,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: credential.user.displayName ?? "",
         email: userEmail,
         role: determineRole(userEmail),
-        vettingStatus: "pending",
-        walkTokens: 1,
-        dogs: [],
-        paysMonthly: false,
-        mondayWalkTime: null,
-        tuesdayWalkTime: null,
-        wednesdayWalkTime: null,
-        thursdayWalkTime: null,
-        fridayWalkTime: null,
-        saturdayWalkTime: null,
-        sundayWalkTime: null,
+        isVetted: false,
+        walksPerWeek: 1,
+        firstFreeWalkBookingId: null,
       };
       await ensureProfileDocument(credential.user.uid, fallback);
     },
@@ -293,17 +238,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       name: firebaseUser.displayName ?? "",
       email,
       role: determineRole(email),
-      vettingStatus: "pending",
-      walkTokens: 1,
-      dogs: [],
-      paysMonthly: false,
-      mondayWalkTime: null,
-      tuesdayWalkTime: null,
-      wednesdayWalkTime: null,
-      thursdayWalkTime: null,
-      fridayWalkTime: null,
-      saturdayWalkTime: null,
-      sundayWalkTime: null,
+      isVetted: false,
+      walksPerWeek: 1,
+      firstFreeWalkBookingId: null,
     };
     await ensureProfileDocument(firebaseUser.uid, fallback);
   }, [ensureProfileDocument]);

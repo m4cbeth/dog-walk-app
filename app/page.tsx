@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { WALK_PACKS } from "@/lib/walkPacks";
 import { RiToothLine } from "react-icons/ri";
 
 export default function Home() {
@@ -211,13 +210,13 @@ export default function Home() {
                 },
               ].map((subscription, idx) => (
                 <div
-                  style={idx===2?{boxShadow: '0 0 20px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0,0,0,.5)'}:{}}
+                  style={idx === 2 ? { boxShadow: '0 0 20px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0,0,0,.5)' } : {}}
                   key={subscription.title}
                   className="rounded-box border border-base-200 text-primary bg-primary-content p-8 text-center shadow-md"
                 >
                   <h4
-                  style={idx === 2 ? {textShadow: '0 0 20px rgba(236, 72, 153, 0.5), 0 0 40px rgba(168, 85, 247, 0.3)'} : {}} 
-                  className={`text-2xl font-semibold ${idx === 2 ? "bg-linear-to-br from-indigo-300 via-cyan-300 to-violet-300  bg-clip-text text-transparent" : ""}`}>{subscription.title}</h4>
+                    style={idx === 2 ? { textShadow: '0 0 20px rgba(236, 72, 153, 0.5), 0 0 40px rgba(168, 85, 247, 0.3)' } : {}}
+                    className={`text-2xl font-semibold ${idx === 2 ? "bg-linear-to-br from-indigo-300 via-cyan-300 to-violet-300  bg-clip-text text-transparent" : ""}`}>{subscription.title}</h4>
                   <p className="mt-2 text-sm text-white/70">
                     {subscription.price}
                   </p>

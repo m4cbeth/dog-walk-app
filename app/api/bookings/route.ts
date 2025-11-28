@@ -5,7 +5,6 @@ import type { AppUser } from "@/types/user";
 
 interface CreateBookingRequest {
   startTime: string;
-  dogName: string;
 }
 
 function getAdminEmails(): string[] {
@@ -35,13 +34,6 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    const dogName = body.dogName?.trim();
-    if (!dogName) {
-      return NextResponse.json(
-        { error: "Please provide a dog name" },
-        { status: 400 }
-      );
-    }
 
     const start = new Date(body.startTime);
     if (Number.isNaN(start.getTime())) {
@@ -52,9 +44,9 @@ export async function POST(request: Request) {
     }
 
     const minutes = start.getUTCMinutes();
-    if (minutes % 15 !== 0) {
+    if (minutes % 30 !== 0) {
       return NextResponse.json(
-        { error: "Start time must be on a 15-minute interval" },
+        { error: "Start time must be on a 30-minute interval" },
         { status: 400 }
       );
     }
@@ -70,9 +62,17 @@ export async function POST(request: Request) {
         throw new Error("User profile not found");
       }
       const userData = userSnap.data() as AppUser;
-      const currentTokens = userData.walkTokens ?? 0;
-      if (currentTokens < 1) {
-        throw new Error("Insufficient tokens");
+      
+      // For unvetted users, only allow one booking (their free walk)
+      if (!userData.isVetted) {
+        if (userData.firstFreeWalkBookingId) {
+          // Check if the existing booking still exists
+          const existingBookingRef = db.collection("bookings").doc(userData.firstFreeWalkBookingId);
+          const existingBookingSnap = await transaction.get(existingBookingRef);
+          if (existingBookingSnap.exists && existingBookingSnap.data()?.status === "booked") {
+            throw new Error("You already have a free walk booked. Please cancel it first to book a new time.");
+          }
+        }
       }
 
       const bookingSnap = await transaction.get(bookingRef);
@@ -84,18 +84,20 @@ export async function POST(request: Request) {
         userId: decoded.uid,
         userName: userData.name,
         userEmail: userData.email,
-        dogName,
         status: "booked",
         startTime: Timestamp.fromDate(start),
-        endTime: Timestamp.fromDate(new Date(start.getTime() + 15 * 60 * 1000)),
+        endTime: Timestamp.fromDate(new Date(start.getTime() + 30 * 60 * 1000)),
         dateKey: formatDateKey(start),
         createdAt: FieldValue.serverTimestamp(),
       });
 
-      transaction.update(userRef, {
-        walkTokens: FieldValue.increment(-1),
-        updatedAt: FieldValue.serverTimestamp(),
-      });
+      // For unvetted users, store the booking ID as their first free walk
+      if (!userData.isVetted) {
+        transaction.update(userRef, {
+          firstFreeWalkBookingId: slotId,
+          updatedAt: FieldValue.serverTimestamp(),
+        });
+      }
     });
 
     return NextResponse.json({ success: true });
@@ -104,9 +106,7 @@ export async function POST(request: Request) {
     const message =
       error instanceof Error ? error.message : "Unable to create booking";
     const status =
-      message === "Insufficient tokens"
-        ? 400
-        : message === "Slot already booked"
+      message === "Slot already booked"
         ? 409
         : message === "User profile not found"
         ? 404
@@ -147,13 +147,73 @@ export async function GET(request: Request) {
           id: doc.id,
           userName: data.userName,
           userEmail: data.userEmail,
-          dogName: data.dogName,
           startTime: data.startTime?.toDate().toISOString(),
           status: data.status,
         };
       });
 
       return NextResponse.json({ bookings });
+    }
+
+    if (scope === "user") {
+      const authHeader = request.headers.get("authorization");
+      if (!authHeader?.startsWith("Bearer ")) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      const token = authHeader.slice("Bearer ".length);
+      const decoded = await verifyFirebaseIdToken(token);
+
+      // Get user's current booking
+      const userRef = db.collection("users").doc(decoded.uid);
+      const userSnap = await userRef.get();
+      if (!userSnap.exists) {
+        return NextResponse.json({ booking: null });
+      }
+
+      const userData = userSnap.data() as AppUser;
+      
+      // For unvetted users, check their first free walk booking
+      if (!userData.isVetted && userData.firstFreeWalkBookingId) {
+        const bookingRef = db.collection("bookings").doc(userData.firstFreeWalkBookingId);
+        const bookingSnap = await bookingRef.get();
+        if (bookingSnap.exists) {
+          const bookingData = bookingSnap.data();
+          if (bookingData?.status === "booked") {
+            return NextResponse.json({
+              booking: {
+                id: bookingSnap.id,
+                startTime: bookingData.startTime?.toDate().toISOString(),
+                status: bookingData.status,
+              },
+            });
+          }
+        }
+      }
+
+      // For vetted users or no booking found, check for any upcoming bookings
+      const now = new Date();
+      const snapshot = await db
+        .collection("bookings")
+        .where("userId", "==", decoded.uid)
+        .where("startTime", ">=", Timestamp.fromDate(now))
+        .where("status", "==", "booked")
+        .orderBy("startTime", "asc")
+        .limit(1)
+        .get();
+
+      if (snapshot.docs.length > 0) {
+        const doc = snapshot.docs[0];
+        const data = doc.data();
+        return NextResponse.json({
+          booking: {
+            id: doc.id,
+            startTime: data.startTime?.toDate().toISOString(),
+            status: data.status,
+          },
+        });
+      }
+
+      return NextResponse.json({ booking: null });
     }
 
     const date = url.searchParams.get("date");
@@ -181,6 +241,79 @@ export async function GET(request: Request) {
       { error: "Unable to fetch bookings" },
       { status: 500 }
     );
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const authHeader = request.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const token = authHeader.slice("Bearer ".length);
+    const decoded = await verifyFirebaseIdToken(token);
+
+    const url = new URL(request.url);
+    const bookingId = url.searchParams.get("id");
+    if (!bookingId) {
+      return NextResponse.json(
+        { error: "Missing booking ID" },
+        { status: 400 }
+      );
+    }
+
+    const db = getAdminDb();
+    const userRef = db.collection("users").doc(decoded.uid);
+    const bookingRef = db.collection("bookings").doc(bookingId);
+
+    await db.runTransaction(async (transaction) => {
+      const userSnap = await transaction.get(userRef);
+      if (!userSnap.exists) {
+        throw new Error("User profile not found");
+      }
+
+      const bookingSnap = await transaction.get(bookingRef);
+      if (!bookingSnap.exists) {
+        throw new Error("Booking not found");
+      }
+
+      const bookingData = bookingSnap.data();
+      if (bookingData?.userId !== decoded.uid) {
+        throw new Error("Unauthorized to cancel this booking");
+      }
+
+      if (bookingData?.status !== "booked") {
+        throw new Error("Booking is not active");
+      }
+
+      // Cancel the booking
+      transaction.update(bookingRef, {
+        status: "cancelled",
+        cancelledAt: FieldValue.serverTimestamp(),
+      });
+
+      // For unvetted users, clear their first free walk booking ID
+      const userData = userSnap.data() as AppUser;
+      if (!userData.isVetted && userData.firstFreeWalkBookingId === bookingId) {
+        transaction.update(userRef, {
+          firstFreeWalkBookingId: null,
+          updatedAt: FieldValue.serverTimestamp(),
+        });
+      }
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Cancel booking failed", error);
+    const message =
+      error instanceof Error ? error.message : "Unable to cancel booking";
+    const status =
+      message === "Booking not found" || message === "User profile not found"
+        ? 404
+        : message === "Unauthorized to cancel this booking"
+        ? 403
+        : 500;
+    return NextResponse.json({ error: message }, { status });
   }
 }
 
